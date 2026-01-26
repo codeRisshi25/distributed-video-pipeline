@@ -6,17 +6,14 @@ const storage = multer.diskStorage({
     cb(null, "./uploads");
   },
   filename: (req, file, cb) => {
-    const fileName = `${Date.now()}-${file.filename}`;
+    const fileName = `${Date.now()}-${file.originalname}`;
     cb(null, fileName);
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("video/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only video allowed"), false);
-  }
+  console.log("📁 File mimetype:", file.mimetype);
+  cb(null, true); // Accept everything for now
 };
 
 const limits = {

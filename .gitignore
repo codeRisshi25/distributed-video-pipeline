@@ -4,3 +4,6 @@ dist
 .DS_Store
 .vscode
 package-lock.json
+*.mp4
+uploads
+outpts

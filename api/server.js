@@ -1,7 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import { createQueue } from "../shared/queue.js";
-import {upload} from "multer.js";
+import { upload } from "./multer.js";
+// dashboard related stuff
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { ExpressAdapter } from "@bull-board/express";
 
 const app = express();
 const queue = createQueue();
@@ -15,41 +19,54 @@ app.get("/health", (req, res) => {
   });
 });
 
+// BullMQ admin dashboard
+const serverAdapter = new ExpressAdapter();
+createBullBoard({
+  queues: [new BullMQAdapter(queue)],
+  serverAdapter: serverAdapter,
+});
 
-app.post('/api/convert', upload.single('video'), async (req,res) => { 
-    // By now i will have req.file -> file info 
-    // req.body -> file metadata
-    // the actual file in uploads 
+serverAdapter.setBasePath("/admin/queues");
 
-    // gotta check if file exists
+app.use("/admin/queues", serverAdapter.getRouter());
+
+app.post("/api/convert", upload.single("video"), async (req, res) => {
+  // By now i will have req.file -> file info
+  // req.body -> file metadata
+  // the actual file in uploads
+
+  // gotta check if file exists
+  try {
     if (!req.file) {
-        res.status(400).json({
-            error: 'File not found'
-        })
+      return res.status(400).json({
+        error: "File not found",
+      });
     }
 
-    const format = req.body.format || 'mp4';
-    const resolution = req.body.resolution || 'original';
+    const format = req.body.format || "mp4";
+    const resolution = req.body.resolution || "original";
 
     const jobData = {
-        uploadPath : req.file.path,
-        fileName : req.file.filename,
-        format : format,
-        resolution :  resolution,
-        convertTo : 'mpeg', // remove the hardcode later
-        uploadTime : req.file.uploadTime
-    }
+      uploadPath: req.file.path,
+      fileName: req.file.filename,
+      format: format,
+      resolution: resolution,
+      uploadTime: new Date().toISOString(),
+    };
 
     // create the job
-    const job = await queue.add('convert-video',jobData);
+    const job = await queue.add("convert-video", jobData);
 
     res.status(202).json({
-        message: "Video processing",
-        jobId: job.id,
-        status: await job.getState(),
-        data: jobData
+      message: "Video processing",
+      jobId: job.id,
+      status: await job.getState(),
+      data: jobData,
     });
-
-})
+  } catch (error) {
+    console.log("Error queueing job:", error);
+    return res.status(500).json({ error: "Failed to queue job " });
+  }
+});
 
 app.listen(PORT, () => console.log(`%videoconverter% running on %${PORT}%`));
