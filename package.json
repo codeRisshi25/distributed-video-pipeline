@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "api": "node api/server.js",
-    "worker": "node worker/processor.js",
+    "worker": "node workers/worker.js",
     "dev:api": "nodemon api/server.js",
-    "dev:worker": "nodemon worker/processor.js"
+    "dev:worker": "nodemon workers/worker.js"
   },
   "keywords": [],
   "author": "",
