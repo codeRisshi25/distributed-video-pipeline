@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import { createQueue } from "../shared/queue.js";
 import { upload } from "./multer.js";
 import { logger } from "../shared/logger.js";
+import { fileHash } from "../shared/hash.js";
+import { createClient } from "redis";
+import { unlinkSync } from "fs";
 // dashboard related stuff
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
@@ -27,16 +30,21 @@ createBullBoard({
   serverAdapter: serverAdapter,
 });
 
+// Redis connection for storing file hashes
+const redisClient = createClient({
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  },
+});
+
+await redisClient.connect();
+
 serverAdapter.setBasePath("/admin/queues");
 
 app.use("/admin/queues", serverAdapter.getRouter());
 
 app.post("/api/convert", upload.single("video"), async (req, res) => {
-  // By now i will have req.file -> file info
-  // req.body -> file metadata
-  // the actual file in uploads
-
-  // gotta check if file exists
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -44,8 +52,30 @@ app.post("/api/convert", upload.single("video"), async (req, res) => {
       });
     }
 
+    // Extract format and resolution FIRST
     const format = req.body.format || "mp4";
     const resolution = req.body.resolution || "original";
+
+    // Check for duplicate file
+    const hashOfFile = fileHash(req.file.path);
+    const cacheKey = `processed:${hashOfFile}:${format}:${resolution}`;
+
+    const existingJobId = await redisClient.get(cacheKey);
+    if (existingJobId) {
+      unlinkSync(req.file.path); // Delete duplicate upload
+
+      logger.info({
+        msg: "duplicate_detected",
+        jobId: existingJobId,
+        hash: hashOfFile,
+      });
+
+      return res.status(200).json({
+        message: "Video already processed",
+        jobId: existingJobId,
+        cached: true,
+      });
+    }
 
     const jobData = {
       uploadPath: req.file.path,
@@ -55,8 +85,18 @@ app.post("/api/convert", upload.single("video"), async (req, res) => {
       uploadTime: new Date().toISOString(),
     };
 
-    // create the job
+    // Create the job
     const job = await queue.add("convert-video", jobData);
+
+    // Store in cache (expires in 7 days)
+    await redisClient.setEx(cacheKey, 7 * 24 * 60 * 60, job.id);
+
+    logger.info({
+      msg: "job_queued",
+      jobId: job.id,
+      hash: hashOfFile,
+      data: jobData,
+    });
 
     res.status(202).json({
       message: "Video processing",
@@ -64,15 +104,13 @@ app.post("/api/convert", upload.single("video"), async (req, res) => {
       status: await job.getState(),
       data: jobData,
     });
-
-    logger.info({
-      msg: "job_queued",
-      jobId: job.id,
-      data: jobData,
-    });
   } catch (error) {
-    logger.error("error while quesing job =>\n", error);
-    return res.status(500).json({ error: "Failed to queue job " });
+    logger.error({
+      msg: "error_queueing_job",
+      error: error.message,
+      stack: error.stack,
+    });
+    return res.status(500).json({ error: "Failed to queue job" });
   }
 });
 
