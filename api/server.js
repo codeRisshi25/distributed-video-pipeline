@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { createQueue } from "../shared/queue.js";
 import { upload } from "./multer.js";
+import { logger } from "../shared/logger.js";
 // dashboard related stuff
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
@@ -64,9 +65,9 @@ app.post("/api/convert", upload.single("video"), async (req, res) => {
       data: jobData,
     });
   } catch (error) {
-    console.log("Error queueing job:", error);
+    logger.error("error while quesing job =>\n", error);
     return res.status(500).json({ error: "Failed to queue job " });
   }
 });
 
-app.listen(PORT, () => console.log(`%videoconverter% running on %${PORT}%`));
+app.listen(PORT, () => logger.info(`video converter running on ${PORT}`));

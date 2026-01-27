@@ -1,5 +1,5 @@
 import multer from "multer";
-import path from "path";
+import { logger } from "../shared/logger.js";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  console.log("📁 File mimetype:", file.mimetype);
+  logger.info("📁 File mimetype:", file.mimetype);
   cb(null, true); // Accept everything for now
 };
 

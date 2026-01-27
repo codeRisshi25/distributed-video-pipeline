@@ -1,4 +1,5 @@
 import { spawn } from "child_process";
+import { logger } from "../shared/logger";
 
 export const processJob = async (job) => {
   const { uploadPath, format, resolution } = job.data;
@@ -22,11 +23,13 @@ export const processJob = async (job) => {
 
     ffmpeg.stderr.on("data", (data) => {
       stderrData += data.toString();
-      console.log("📊 FFmpeg progress:", data.toString().slice(0, 100));
+      logger.info("📊 FFmpeg progress:", data.toString().slice(0, 100));
     });
 
     ffmpeg.on("error", (error) => {
-      reject(new Error(`Failed to start FFmpeg: ${error.message}`));
+      reject(
+        new Error(`error while trying to start ffmpeg =>\n ${error.message}`),
+      );
     });
 
     ffmpeg.on("close", (code) => {
@@ -34,12 +37,12 @@ export const processJob = async (job) => {
         resolve({
           success: true,
           outputPath,
-          message: "Video converted successfully",
+          message: "video converted successfully",
         });
       } else {
         reject(
           new Error(
-            `FFmpeg failed with exit code ${code}. Error: ${stderrData}`,
+            `ffmpeg failed with exit code ${code}. Error: ${stderrData}`,
           ),
         );
       }
