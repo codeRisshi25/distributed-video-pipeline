@@ -76,4 +76,26 @@ app.post("/api/convert", upload.single("video"), async (req, res) => {
   }
 });
 
+// Job status endpoints
+app.get("/api/jobs/:jobid", async (req, res) => {
+  const job = await queue.getJob(req.params.jobid);
+
+  if (!job) {
+    return res.status(404).json({ error: "Job not found" });
+  }
+
+  res.json({
+    jobId: job.id,
+    state: await job.getState(),
+    progress: job.progress || 0,
+    data: job.data,
+    result: job.returnvalue,
+    error: job.failedReason,
+    createdAt: job.timestamp,
+    processedAt: job.processedOn,
+    finishedAt: job.finishedOn,
+    attemptsMade: job.attemptsMade,
+  });
+});
+
 app.listen(PORT, () => logger.info(`video converter running on ${PORT}`));
