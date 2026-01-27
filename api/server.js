@@ -64,6 +64,12 @@ app.post("/api/convert", upload.single("video"), async (req, res) => {
       status: await job.getState(),
       data: jobData,
     });
+
+    logger.info({
+      msg: "job_queued",
+      jobId: job.id,
+      data: jobData,
+    });
   } catch (error) {
     logger.error("error while quesing job =>\n", error);
     return res.status(500).json({ error: "Failed to queue job " });

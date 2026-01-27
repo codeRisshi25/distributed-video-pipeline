@@ -5,21 +5,28 @@ import { logger } from "../shared/logger.js";
 const worker = createWorker(processJob);
 
 worker.on("completed", (job, result) => {
-  logger.info("job completed successfully:", {
+  logger.info({
+    msg: "job_completed",
     jobId: job.id,
     result: result,
   });
 });
 
 worker.on("failed", (job, err) => {
-  logger.error("job failed:", {
+  logger.error({
+    msg: "job_failed",
     jobId: job.id,
     error: err.message,
+    stack: err.stack,
   });
 });
 
 worker.on("error", (err) => {
-  logger.error("Worker encountered an error:", err);
+  logger.error({
+    msg: "worker_error",
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 logger.info("Worker is running and waiting for jobs...");

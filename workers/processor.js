@@ -1,20 +1,22 @@
 import { spawn } from "child_process";
-import { logger } from "../shared/logger";
+import { logger } from "../shared/logger.js";
 
 export const processJob = async (job) => {
   const { uploadPath, format, resolution } = job.data;
   const outputPath = `./outputs/${job.id}-conv.${format}`;
 
-  const args = [
+  const mp4ToMpeg = ["-i", uploadPath, "-f", "mpeg", "-r", "25", outputPath];
+
+  const resolutionChange = [
     "-i",
     uploadPath,
-    "-c:v",
-    "libx264",
-    "-crf",
-    23,
-    "-y",
+    "-vf",
+    `scale=${resolution.split("x")[0]}:${resolution.split("x")[1]}`,
+
     outputPath,
   ];
+
+  const args = resolution !== "original" ? resolutionChange : mp4ToMpeg;
 
   return new Promise((resolve, reject) => {
     const ffmpeg = spawn("ffmpeg", args);
