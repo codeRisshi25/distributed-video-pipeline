@@ -12,3 +12,15 @@ export interface ConversionResult {
   outputPath?: string;
   message: string;
 }
+export interface JobStatusResponse {
+  jobId: string;
+  state: string;
+  progress: number;
+  data: VideoJob;
+  result?: ConversionResult;
+  error?: string;
+  createdAt: number;
+  processedAt: number | undefined;
+  finishedAt: number | undefined;
+  attemptsMade: number;
+}
