@@ -1,12 +1,13 @@
-import { Queue, Worker } from "bullmq";
+import { Queue, Worker, Job } from "bullmq";
 import dotenv from "dotenv";
+import type { VideoJob } from "./types";
 
 dotenv.config();
 
 // redis connection - ill use it for metadata and job details
 export const redisConnection = {
   host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT) || 6379,
+  port: parseInt(process.env.REDIS_PORT || "6379"),
   maxRetriesPerRequest: null,
 };
 
@@ -33,7 +34,7 @@ export const createQueue = () => {
   });
 };
 
-export const createWorker = (processor) => {
+export const createWorker = (processor: (job: Job<VideoJob>) => Promise<any>) => {
   return new Worker(QUEUE_NAME, processor, {
     connection: redisConnection,
     concurrency: 2,
