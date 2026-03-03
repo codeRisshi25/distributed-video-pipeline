@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:api": "ts-node-dev --respawn --transpile-only api/server.js",
-    "dev:worker": "ts-node-dev --respawn --transpile-only workers/worker.js",
-    "build": "tsc",
-    "start:api": "node dist/api/server.js",
-    "start:worker": "node dist/workers/worker.js"
-  },
+      "dev:api": "tsx watch api/server.ts",
+      "dev:worker": "tsx watch workers/worker.ts",
+      "type-check": "tsc --noEmit",
+      "build": "node build.js",
+      "start:api": "node dist/api/server.js",
+      "start:worker": "node dist/workers/worker.js"
+    },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -31,8 +32,10 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^25.3.0",
     "@types/pino": "^7.0.4",
+    "esbuild": "^0.27.3",
     "nodemon": "^3.1.11",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
