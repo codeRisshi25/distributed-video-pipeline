@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  backend:
+    build: .
+    container_name: node-app
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - redis
+  redis:
+    image: redis:alpine
+    container_name: redis-server
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

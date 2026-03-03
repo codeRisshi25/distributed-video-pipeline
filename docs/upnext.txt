@@ -1,0 +1,46 @@
+Capstone Checklist
+Before AI Services:
+
+TypeScript migration
+Input validation
+Health checks
+Error handling
+Unit tests (3-5 tests)
+Docker setup (all services)
+README updated
+Environment variables documented
+With AI Services:
+
+Whisper transcription pipeline
+Store transcripts in outputs
+API endpoint: GET /api/jobs/:id/transcript
+With Frontend:
+
+Upload form
+Progress bar
+Download button
+Job history
+For Deployment:
+
+GitHub Actions CI/CD
+Deploy to Railway/Heroku
+Custom domain (optional)
+Time Estimate
+Phase 0 (Foundation): 6-8 hours
+Phase 1a (Whisper): 3-4 hours
+Phase 1b (Frontend): 4-6 hours
+Deployment: 2-3 hours
+Total: 15-21 hours for production-ready capstone ✅
+
+My Recommendation
+Do this order:
+
+Then you have a portfolio-ready project with:
+
+✅ scalable backend
+✅ AI integration
+✅ deployed to cloud
+✅ working frontend
+Ready to tackle Phase 0? Start with TypeScript migration - biggest impact! Or want me to show you how to do it? 🚀
+
+Claude Haiku 4.5 • 0.33x
