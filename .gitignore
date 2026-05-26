@@ -7,3 +7,4 @@ package-lock.json
 *.mp4
 uploads
 outputs
+docs/
