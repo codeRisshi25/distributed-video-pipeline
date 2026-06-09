@@ -1,40 +1,36 @@
 {
-  "name": "vid_converter",
+  "name": "vid-converter",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Video converter monorepo — FFmpeg-powered conversion API with BullMQ workers",
+  "private": true,
   "scripts": {
-    "dev:api": "tsx watch api/server.ts",
-    "dev:worker": "tsx watch workers/worker.ts",
-    "type-check": "tsc --noEmit",
-    "build": "node build.js",
-    "start:api": "node dist/api/server.js",
-    "start:worker": "node dist/workers/worker.js"
+    "dev": "pnpm --parallel --filter=!@vid_converter/shared run dev",
+    "dev:api": "pnpm --filter @vid_converter/api dev",
+    "dev:worker": "pnpm --filter @vid_converter/workers dev",
+    "build": "pnpm run build:packages && pnpm run build:apps",
+    "build:packages": "pnpm --filter @vid_converter/shared build",
+    "build:apps": "pnpm --filter @vid_converter/api build && pnpm --filter @vid_converter/workers build",
+    "start:api": "pnpm --filter @vid_converter/api start",
+    "start:worker": "pnpm --filter @vid_converter/workers start",
+    "typecheck": "tsc --build --noEmit",
+    "typecheck:all": "pnpm -r typecheck",
+    "clean": "pnpm -r clean && rm -rf dist node_modules/.cache",
+    "clean:all": "pnpm -r clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "lint": "pnpm -r --if-present lint",
+    "format": "prettier --write \"**/*.{ts,json,md}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,json,md}\" --ignore-path .gitignore",
+    "test": "pnpm -r --if-present test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "@bull-board/api": "^6.21.3",
-    "@bull-board/express": "^6.21.3",
-    "bullmq": "^5.76.8",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "ioredis": "^5.10.1",
-    "multer": "^2.1.1",
-    "pino": "^10.3.1",
-    "pino-pretty": "^13.1.3",
-    "redis": "^5.12.1"
-  },
   "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/multer": "^2.1.0",
-    "@types/node": "^25.7.0",
-    "esbuild": "^0.27.7",
-    "nodemon": "^3.1.14",
-    "ts-node-dev": "^2.0.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
-  }
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
 }

@@ -1,5 +1,5 @@
 import multer from "multer";
-import { logger } from "../shared/logger.js";
+import { logger } from "@vid_converter/shared";
 import type { Request } from "express";
 
 const storage = multer.diskStorage({

@@ -1,9 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { createQueue } from '../shared/queue.ts';
-import { upload } from './multer.ts';
-import { logger } from '../shared/logger.ts';
-import { fileHash } from '../shared/hash.ts';
+import { createQueue } from '@vid_converter/shared';
+import { upload } from './multer.js';
+import { logger } from '@vid_converter/shared';
+import { fileHash } from '@vid_converter/shared';
 import { createClient } from 'redis';
 import { unlinkSync } from 'fs';
 // dashboard related stuff
@@ -11,12 +11,13 @@ import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
 //* import types
-import type { Format, Resolution, VideoJob, JobStatusResponse } from '../shared/types';
+import type { Format, Resolution, VideoJob, JobStatusResponse } from '@vid_converter/shared';
 import type { Job } from 'bullmq';
+
+dotenv.config();
 
 const app = express();
 const queue = createQueue();
-dotenv.config();
 
 const PORT = process.env.API_PORT || 3000;
 
@@ -44,6 +45,7 @@ const redisClient = createClient({
 redisClient.on('error', (err) => {
   logger.error({ message: 'redis client error', error: err });
 });
+
 // connecting correctly while handling errors
 const connectRedis = async () => {
   try {
@@ -132,7 +134,7 @@ app.post(
   },
 );
 
-// Job status endpoints
+// Job status endpoint
 app.get(
   '/api/jobs/:jobid',
   async (
@@ -161,15 +163,13 @@ app.get(
   },
 );
 
-app.listen(PORT, () => logger.info(`video converter running on ${PORT}`));
-
 const startServer = async () => {
   try {
     await connectRedis();
-
-    app.listen(PORT, () => logger.info(`video converter running on ${PORT}`));
+    app.listen(PORT, () => logger.info(`video converter running on port ${PORT}`));
   } catch (err) {
     logger.error({ message: 'server startup error', error: err });
+    process.exit(1);
   }
 };
 
