@@ -1,0 +1,12 @@
+{
+  "name": "@vid_converter/web",
+  "version": "1.0.0",
+  "description": "Web frontend for vid_converter — to be implemented",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'web app not yet implemented'",
+    "build": "echo 'web app not yet implemented'",
+    "typecheck": "echo 'web app not yet implemented'",
+    "clean": "rm -rf dist .next .turbo"
+  }
+}

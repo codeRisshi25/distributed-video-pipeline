@@ -1,37 +1,38 @@
-import { createWorker } from "../shared/queue.js";
+import { createWorker } from "@vid_converter/shared";
 import { processJob } from "./processor.js";
-import { logger } from "../shared/logger.js";
+import { logger } from "@vid_converter/shared";
 import { unlinkSync } from "fs";
+import type { Job } from "bullmq";
+import type { VideoJob } from "@vid_converter/shared";
 
 const worker = createWorker(processJob);
 
-worker.on("completed", (job, result) => {
-  // delete the input file
+worker.on("completed", (job: Job<VideoJob>, result: unknown) => {
+  // delete the input file after successful conversion
   try {
-    console.log(job);
     unlinkSync(job.data.uploadPath);
     logger.info({ msg: "input_file_deleted", path: job.data.uploadPath });
   } catch (error) {
-    logger.warn({ msg: "file_delete_failed", error: error.message });
+    logger.warn({ msg: "file_delete_failed", error: (error as Error).message });
   }
 
   logger.info({
     msg: "job_completed",
     jobId: job.id,
-    result: result,
+    result,
   });
 });
 
-worker.on("failed", (job, err) => {
+worker.on("failed", (job: Job<VideoJob> | undefined, err: Error) => {
   logger.error({
     msg: "job_failed",
-    jobId: job.id,
+    jobId: job?.id,
     error: err.message,
     stack: err.stack,
   });
 });
 
-worker.on("error", (err) => {
+worker.on("error", (err: Error) => {
   logger.error({
     msg: "worker_error",
     error: err.message,

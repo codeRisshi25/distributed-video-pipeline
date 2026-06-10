@@ -1,6 +1,6 @@
 import { Queue, Worker, Job } from "bullmq";
 import dotenv from "dotenv";
-import type { VideoJob } from "./types";
+import type { VideoJob } from "./types.js";
 
 dotenv.config();
 

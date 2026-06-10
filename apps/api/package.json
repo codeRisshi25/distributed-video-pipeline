@@ -1,16 +1,31 @@
 {
   "name": "@vid_converter/api",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/server.js",
+  "description": "Express API server for vid_converter — handles uploads and job queuing",
+  "type": "module",
+  "main": "./dist/server.js",
   "scripts": {
-    "dev": "tsx watch server.ts",
-    "build": "tsc",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc --build",
     "start": "node dist/server.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module"
+  "dependencies": {
+    "@bull-board/api": "^6.5.0",
+    "@bull-board/express": "^6.5.0",
+    "@vid_converter/shared": "workspace:*",
+    "bullmq": "^5.76.8",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "multer": "^2.1.1",
+    "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.0"
+  }
 }

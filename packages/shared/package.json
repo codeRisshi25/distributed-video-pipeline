@@ -1,0 +1,33 @@
+{
+  "name": "@vid_converter/shared",
+  "version": "1.0.0",
+  "description": "Shared types, utilities and queue configuration for vid_converter monorepo",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc --build",
+    "build:watch": "tsc --build --watch",
+    "dev": "tsc --build --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "bullmq": "^5.76.8",
+    "dotenv": "^16.4.5",
+    "pino": "^9.3.2",
+    "pino-pretty": "^11.2.1"
+  }
+}
