@@ -1,12 +1,17 @@
 import { FileUpload } from '@/components/ui/file-upload';
-import { useState } from 'react';
 
-export default function Upload() {
-  const [files, setFiles] = useState<File[]>([]);
+interface UploadSectionProps {
+  file: File | undefined;
+  onFileChange: (file: File | undefined) => void;
+}
 
+export default function UploadSection({ file, onFileChange }: UploadSectionProps) {
   const handleFileUpload = (files: File[]) => {
-    // TODO: keep this file list in shared form state so the submit handler can read it.
-    setFiles(files);
+    if (files.length > 0) {
+      onFileChange(files[0]);
+    } else {
+      onFileChange(undefined);
+    }
   };
 
   return (
@@ -15,9 +20,8 @@ export default function Upload() {
         <FileUpload onChange={handleFileUpload} />
       </div>
       <div className="flex items-center justify-end gap-3">
-        {/* TODO: surface selected file metadata and validation state here. */}
         <p className="text-sm text-muted-foreground">
-          {files.length ? `${files.length} file selected` : 'No file selected yet'}
+          {file ? `1 file selected: ${file.name}` : 'No file selected yet'}
         </p>
       </div>
     </div>

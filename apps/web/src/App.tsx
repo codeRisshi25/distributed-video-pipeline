@@ -7,21 +7,49 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { Sparkles, Video, Zap } from 'lucide-react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { uploadVideo, getJobStatus } from './lib/client';
+import type { Format, Resolution } from '@vid_converter/shared';
 
 export function App() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [file, setFile] = useState<File>();
+  const [format, setFormat] = useState<Format>('mp4');
+  const [resolution, setResolution] = useState<Resolution>('original');
+  const [jobId, setJobId] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      // TODO: read the selected file, output format, and resolution from shared state.
-      // TODO: submit the selected file, format, and resolution to the API.
-      // TODO: store the returned job id and wire it into the job status UI.
-      // TODO: surface success/error feedback and reset the form when appropriate.
-    } finally {
-      setIsSubmitting(false);
+  const uploadMutation = useMutation({
+    mutationFn: uploadVideo,
+    onSuccess: (data) => {
+      setJobId(data.jobId);
+    },
+    onError: (error) => {
+      console.error('Upload failed:', error);
+      alert('Upload failed: ' + error.message);
     }
+  });
+
+  const jobQuery = useQuery({
+    queryKey: ['jobStatus', jobId],
+    queryFn: () => getJobStatus(jobId!),
+    enabled: !!jobId,
+    refetchInterval: (query) => {
+      const state = query.state.data?.state;
+      return (state === 'completed' || state === 'failed') ? false : 2000;
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!file) {
+      alert('Please select a file first.');
+      return;
+    }
+    uploadMutation.mutate({ file, format, resolution });
   };
+
+  const isSubmitting = uploadMutation.isPending;
+  const status = jobQuery.data?.state || (jobId ? 'Queued' : 'Idle');
+  const progress = jobQuery.data?.progress || 0;
+  const errorMsg = jobQuery.data?.error || null;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -49,7 +77,7 @@ export function App() {
                   <Zap className="h-4 w-4" />
                   Queue status
                 </span>
-                <span className="font-medium text-foreground">2 active</span>
+                <span className="font-medium text-foreground">Operational</span>
               </div>
               <Separator className="my-3" />
               <div className="flex items-center justify-between">
@@ -72,11 +100,10 @@ export function App() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* TODO: convert this control row into a single controlled form with submit state. */}
               <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
                 <div className="space-y-2">
                   <Label htmlFor="format">Output format</Label>
-                  <Select defaultValue="mp4">
+                  <Select value={format} onValueChange={(val) => setFormat(val as Format)}>
                     <SelectTrigger id="format" className="rounded-md">
                       <SelectValue placeholder="Choose format" />
                     </SelectTrigger>
@@ -90,30 +117,30 @@ export function App() {
 
                 <div className="space-y-2">
                   <Label htmlFor="resolution">Resolution</Label>
-                  <Select defaultValue="original">
+                  <Select value={resolution} onValueChange={(val) => setResolution(val as Resolution)}>
                     <SelectTrigger id="resolution" className="rounded-md">
                       <SelectValue placeholder="Choose resolution" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="original">Original</SelectItem>
-                      <SelectItem value="720p">720p</SelectItem>
-                      <SelectItem value="480p">480p</SelectItem>
-                      <SelectItem value="360p">360p</SelectItem>
-                      <SelectItem value="240p">240p</SelectItem>
+                      <SelectItem value="1280x720">720p</SelectItem>
+                      <SelectItem value="480x270">480p</SelectItem>
+                      <SelectItem value="360x202">360p</SelectItem>
+                      <SelectItem value="240x135">240p</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <Button
                   onClick={handleSubmit}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !file}
                   className="h-10 rounded-md bg-neutral-900 px-4 text-white hover:bg-neutral-800"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit upload'}
                 </Button>
               </div>
 
-              <UploadSection />
+              <UploadSection file={file} onFileChange={setFile} />
             </CardContent>
           </Card>
 
@@ -128,21 +155,38 @@ export function App() {
               <div className="rounded-xl border border-border bg-muted/60 p-4">
                 <div className="mb-3 flex items-center justify-between text-sm text-muted-foreground">
                   <span>Processing status</span>
-                  <span className="font-medium text-foreground">Queued</span>
+                  <span className="font-medium text-foreground capitalize">{status}</span>
                 </div>
-                <Progress value={35} className="h-2" />
-                <p className="mt-3 text-sm text-muted-foreground">Waiting for the worker to begin conversion…</p>
+                <Progress value={progress} className="h-2" />
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {status === 'Idle' && 'Waiting for upload to begin...'}
+                  {(status === 'Queued' || status === 'waiting') && 'Waiting for the worker to begin conversion...'}
+                  {status === 'active' && `Converting video... ${progress}%`}
+                  {status === 'completed' && 'Conversion completed successfully!'}
+                  {status === 'failed' && `Conversion failed: ${errorMsg}`}
+                </p>
+                {jobQuery.data?.result?.outputPath && (
+                  <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+                    Output saved to: {jobQuery.data.result.outputPath}
+                  </p>
+                )}
               </div>
 
               <div className="rounded-xl border border-border bg-muted/60 p-4 text-sm text-muted-foreground">
                 <div className="flex items-center justify-between">
-                  <span>Estimated wait</span>
-                  <span className="font-medium text-foreground">~1 min</span>
+                  <span>Target Format</span>
+                  <span className="font-medium text-foreground uppercase">{format}</span>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
-                  <span>Output target</span>
-                  <span className="font-medium text-foreground">MP4</span>
+                  <span>Target Resolution</span>
+                  <span className="font-medium text-foreground">{resolution}</span>
                 </div>
+                {jobId && (
+                  <div className="mt-2 flex items-center justify-between">
+                    <span>Job ID</span>
+                    <span className="font-medium text-foreground text-xs">{jobId}</span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
