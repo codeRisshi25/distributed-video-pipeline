@@ -1,5 +1,5 @@
-export type Format = "mp4" | "mpeg" | "webm";
-export type Resolution = "original" | "720p" | "480p" | "360p" | "240p";
+export type Format = 'mp4' | 'mpeg' | 'webm';
+export type Resolution = 'original' | '1280x720' | '480x270' | '360x202' | '240x135';
 export interface VideoJob {
   uploadPath: string;
   fileName: string;
