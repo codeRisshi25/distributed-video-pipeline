@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils';
 import { useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { IconUpload } from '@tabler/icons-react';
+import { IconUpload, IconX } from '@tabler/icons-react';
 import { useDropzone } from 'react-dropzone';
 
 const mainVariant = {
@@ -31,8 +31,15 @@ export const FileUpload = ({ onChange }: { onChange?: (files: File[]) => void })
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange(newFiles);
+    const file = newFiles.length > 0 && newFiles[0] ? [newFiles[0]] : [];
+    setFiles(file);
+    onChange && onChange(file);
+  };
+
+  const removeFile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFiles([]);
+    onChange && onChange([]);
   };
 
   const handleClick = () => {
@@ -93,14 +100,23 @@ export const FileUpload = ({ onChange }: { onChange?: (files: File[]) => void })
                     >
                       {file.name}
                     </motion.p>
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="shadow-input w-fit shrink-0 rounded-lg px-2 py-1 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-white"
-                    >
-                      {(file.size / (1024 * 1024)).toFixed(2)} MB
-                    </motion.p>
+                    <div className="flex items-center gap-2">
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        layout
+                        className="shadow-input w-fit shrink-0 rounded-lg px-2 py-1 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-white"
+                      >
+                        {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      </motion.p>
+                      <button
+                        onClick={removeFile}
+                        type="button"
+                        className="rounded-full bg-red-100 p-1 text-red-500 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50"
+                      >
+                        <IconX className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="mt-2 flex w-full flex-col items-start justify-between text-sm text-neutral-600 md:flex-row md:items-center dark:text-neutral-400">
