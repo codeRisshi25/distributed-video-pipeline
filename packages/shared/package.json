@@ -12,7 +12,9 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc --build",
     "build:watch": "tsc --build --watch",
@@ -25,6 +27,8 @@
     "typescript": "^5.5.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1089.0",
+    "@aws-sdk/s3-request-presigner": "^3.1089.0",
     "bullmq": "^5.76.8",
     "dotenv": "^16.4.5",
     "pino": "^9.3.2",

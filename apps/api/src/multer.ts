@@ -1,6 +1,7 @@
-import multer from "multer";
-import { logger } from "@vid_converter/shared";
-import type { Request } from "express";
+import multer from 'multer';
+import { logger } from '@vid_converter/shared';
+import type { Request } from 'express';
+import path from 'path';
 
 const storage = multer.diskStorage({
   destination: (
@@ -8,7 +9,7 @@ const storage = multer.diskStorage({
     file: Express.Multer.File,
     cb: (error: Error | null, destination: string) => void,
   ) => {
-    cb(null, "./uploads");
+    cb(null, path.resolve(process.cwd(), 'uploads'));
   },
   filename: (
     req: Request,
@@ -20,11 +21,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (
-  req: Request,
-  file: Express.Multer.File,
-  cb: multer.FileFilterCallback,
-) => {
+const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   logger.info(`📁 File mimetype: ${file.mimetype}`);
   cb(null, true); // Accept everything for now
 };
