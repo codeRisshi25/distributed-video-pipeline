@@ -1,122 +1,130 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import UploadSection from '@/components/UploadSection';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Sparkles, Video, Zap } from 'lucide-react';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-background text-foreground">
+      <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 lg:px-8">
+        <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-sm text-muted-foreground">
+                <Sparkles className="h-4 w-4" />
+                Clean video conversion workspace
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Convert videos with a simple, focused workflow.
+                </h1>
+                <p className="max-w-xl text-base text-muted-foreground">
+                  Upload a file, choose your output settings, and let the background worker take care of the rest.
+                </p>
+              </div>
+            </div>
 
-      <div className="ticks"></div>
+            <div className="rounded-xl border border-border bg-muted/60 p-4 text-sm text-muted-foreground sm:min-w-[260px]">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Zap className="h-4 w-4" />
+                  Queue status
+                </span>
+                <span className="font-medium text-foreground">2 active</span>
+              </div>
+              <Separator className="my-3" />
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Video className="h-4 w-4" />
+                  Supported formats
+                </span>
+                <span className="font-medium text-foreground">MP4 / MPEG / WebM</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <Card className="border-border shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl">Upload your clip</CardTitle>
+              <CardDescription>
+                Drop a file, pick your output format, and launch the job.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <UploadSection />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="format">Output format</Label>
+                  <Select defaultValue="mp4">
+                    <SelectTrigger id="format">
+                      <SelectValue placeholder="Choose format" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mp4">MP4</SelectItem>
+                      <SelectItem value="mpeg">MPEG</SelectItem>
+                      <SelectItem value="webm">WebM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="resolution">Resolution</Label>
+                  <Select defaultValue="original">
+                    <SelectTrigger id="resolution">
+                      <SelectValue placeholder="Choose resolution" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="original">Original</SelectItem>
+                      <SelectItem value="720p">720p</SelectItem>
+                      <SelectItem value="480p">480p</SelectItem>
+                      <SelectItem value="360p">360p</SelectItem>
+                      <SelectItem value="240p">240p</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl">Job snapshot</CardTitle>
+              <CardDescription>
+                A calm preview of the current state while the worker processes your video.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="rounded-xl border border-border bg-muted/60 p-4">
+                <div className="mb-3 flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Processing status</span>
+                  <span className="font-medium text-foreground">Queued</span>
+                </div>
+                <Progress value={35} className="h-2" />
+                <p className="mt-3 text-sm text-muted-foreground">Waiting for the worker to begin conversion…</p>
+              </div>
+
+              <div className="rounded-xl border border-border bg-muted/60 p-4 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span>Estimated wait</span>
+                  <span className="font-medium text-foreground">~1 min</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <span>Output target</span>
+                  <span className="font-medium text-foreground">MP4</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
