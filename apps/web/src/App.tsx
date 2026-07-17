@@ -1,12 +1,28 @@
 import UploadSection from '@/components/UploadSection';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { useState } from 'react';
 import { Sparkles, Video, Zap } from 'lucide-react';
 
 export function App() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // TODO: read the selected file, output format, and resolution from shared state.
+      // TODO: submit the selected file, format, and resolution to the API.
+      // TODO: store the returned job id and wire it into the job status UI.
+      // TODO: surface success/error feedback and reset the form when appropriate.
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 lg:px-8">
@@ -56,13 +72,12 @@ export function App() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <UploadSection />
-
-              <div className="grid gap-4 md:grid-cols-2">
+              {/* TODO: convert this control row into a single controlled form with submit state. */}
+              <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
                 <div className="space-y-2">
                   <Label htmlFor="format">Output format</Label>
                   <Select defaultValue="mp4">
-                    <SelectTrigger id="format">
+                    <SelectTrigger id="format" className="rounded-md">
                       <SelectValue placeholder="Choose format" />
                     </SelectTrigger>
                     <SelectContent>
@@ -76,7 +91,7 @@ export function App() {
                 <div className="space-y-2">
                   <Label htmlFor="resolution">Resolution</Label>
                   <Select defaultValue="original">
-                    <SelectTrigger id="resolution">
+                    <SelectTrigger id="resolution" className="rounded-md">
                       <SelectValue placeholder="Choose resolution" />
                     </SelectTrigger>
                     <SelectContent>
@@ -88,7 +103,17 @@ export function App() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="h-10 rounded-md bg-neutral-900 px-4 text-white hover:bg-neutral-800"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit upload'}
+                </Button>
               </div>
+
+              <UploadSection />
             </CardContent>
           </Card>
 

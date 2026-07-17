@@ -1,9 +1,9 @@
-"use client";
-import { cn } from "@/lib/utils";
-import { useRef, useState } from "react";
-import { motion } from "motion/react";
-import { IconUpload } from "@tabler/icons-react";
-import { useDropzone } from "react-dropzone";
+'use client';
+import { cn } from '@/lib/utils';
+import { useRef, useState } from 'react';
+import { motion } from 'motion/react';
+import { IconUpload } from '@tabler/icons-react';
+import { useDropzone } from 'react-dropzone';
 
 const mainVariant = {
   initial: {
@@ -26,11 +26,7 @@ const secondaryVariant = {
   },
 };
 
-export const FileUpload = ({
-  onChange,
-}: {
-  onChange?: (files: File[]) => void;
-}) => {
+export const FileUpload = ({ onChange }: { onChange?: (files: File[]) => void }) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -62,6 +58,7 @@ export const FileUpload = ({
         <input
           ref={fileInputRef}
           id="file-upload-handle"
+          accept="video/*"
           type="file"
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
@@ -80,11 +77,11 @@ export const FileUpload = ({
             {files.length > 0 &&
               files.map((file, idx) => (
                 <motion.div
-                  key={"file" + idx}
-                  layoutId={idx === 0 ? "file-upload" : "file-upload-" + idx}
+                  key={'file' + idx}
+                  layoutId={idx === 0 ? 'file-upload' : 'file-upload-' + idx}
                   className={cn(
-                    "relative z-40 mx-auto mt-4 flex w-full flex-col items-start justify-start overflow-hidden rounded-md bg-white p-4 md:h-24 dark:bg-neutral-900",
-                    "shadow-sm",
+                    'relative z-40 mx-auto mt-4 flex w-full flex-col items-start justify-start overflow-hidden rounded-md bg-white p-4 md:h-24 dark:bg-neutral-900',
+                    'shadow-sm',
                   )}
                 >
                   <div className="flex w-full items-center justify-between gap-4">
@@ -116,13 +113,8 @@ export const FileUpload = ({
                       {file.type}
                     </motion.p>
 
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                    >
-                      modified{" "}
-                      {new Date(file.lastModified).toLocaleDateString()}
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} layout>
+                      modified {new Date(file.lastModified).toLocaleDateString()}
                     </motion.p>
                   </div>
                 </motion.div>
@@ -132,13 +124,13 @@ export const FileUpload = ({
                 layoutId="file-upload"
                 variants={mainVariant}
                 transition={{
-                  type: "spring",
+                  type: 'spring',
                   stiffness: 300,
                   damping: 20,
                 }}
                 className={cn(
-                  "relative z-40 mx-auto mt-4 flex h-32 w-full max-w-[8rem] items-center justify-center rounded-md bg-white group-hover/file:shadow-2xl dark:bg-neutral-900",
-                  "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]",
+                  'relative z-40 mx-auto mt-4 flex h-32 w-full max-w-[8rem] items-center justify-center rounded-md bg-white group-hover/file:shadow-2xl dark:bg-neutral-900',
+                  'shadow-[0px_10px_50px_rgba(0,0,0,0.1)]',
                 )}
               >
                 {isDragActive ? (
@@ -182,8 +174,8 @@ export function GridPattern() {
               key={`${col}-${row}`}
               className={`flex h-10 w-10 shrink-0 rounded-[2px] ${
                 index % 2 === 0
-                  ? "bg-gray-50 dark:bg-neutral-950"
-                  : "bg-gray-50 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset] dark:bg-neutral-950 dark:shadow-[0px_0px_1px_3px_rgba(0,0,0,1)_inset]"
+                  ? 'bg-gray-50 dark:bg-neutral-950'
+                  : 'bg-gray-50 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset] dark:bg-neutral-950 dark:shadow-[0px_0px_1px_3px_rgba(0,0,0,1)_inset]'
               }`}
             />
           );
